@@ -1,8 +1,32 @@
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import {
+  SwaggerModule,
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+} from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  await app.listen(3000);
+
+  const config = new DocumentBuilder()
+    .setTitle('DontWannaLogin API')
+    .setDescription('Description')
+    .setVersion('1.0')
+    .addTag('default')
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+
+  const options: SwaggerDocumentOptions = {
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+  };
+
+  SwaggerModule.setup('api', app, document);
+
+  const configService = app.get(ConfigService);
+  const port = configService.get('PORT');
+  await app.listen(port || 3000);
 }
+
 bootstrap();
