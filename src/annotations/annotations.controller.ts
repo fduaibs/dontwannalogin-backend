@@ -40,6 +40,14 @@ export class AnnotationsController {
     return await this.annotationsService.findOne(id);
   }
 
+  @Get(':aliasOrId/find-by-alias-or-id')
+  @HttpCode(HttpStatus.OK)
+  async findByAliasOrId(
+    @Param('aliasOrId') aliasOrId: string,
+  ): Promise<AnnotationDocument> {
+    return await this.annotationsService.findByAliasOrId(aliasOrId);
+  }
+
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async update(

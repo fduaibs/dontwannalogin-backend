@@ -32,6 +32,18 @@ export class AnnotationsService {
     return foundAnnotation;
   }
 
+  async findByAliasOrId(aliasOrId: string): Promise<AnnotationDocument> {
+    const foundAnnotationByAlias = await this.annotationModel.findOne({
+      alias: aliasOrId,
+    });
+
+    if (!foundAnnotationByAlias) {
+      return await this.annotationModel.findById(aliasOrId);
+    }
+
+    return foundAnnotationByAlias;
+  }
+
   async update(id: string, updateAnnotationDto: UpdateAnnotationDto) {
     const updatedAnnotation = await this.annotationModel.updateOne(
       { _id: id },
