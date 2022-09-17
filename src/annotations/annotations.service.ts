@@ -16,6 +16,11 @@ export class AnnotationsService {
     createAnnotationDto: CreateAnnotationDto,
   ): Promise<AnnotationDocument> {
     const createdAnnotation = new this.annotationModel(createAnnotationDto);
+
+    if (!createdAnnotation.alias) {
+      createdAnnotation.alias = createdAnnotation._id;
+    }
+
     const savedEntry = await createdAnnotation.save();
 
     return savedEntry;
