@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
 import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
@@ -42,14 +46,36 @@ export class AnnotationsService {
       alias: aliasOrId,
     });
 
-    if (!foundAnnotationByAlias) {
-      return await this.annotationModel.findById(aliasOrId);
+    if (!foundAnnotationByAlias && isValidObjectId(aliasOrId)) {
+      const foundAnnotationById = await this.annotationModel.findById(
+        aliasOrId,
+      );
+
+      if (!foundAnnotationById)
+        throw new NotFoundException('Apelino ou Id da página não encontrado');
     }
 
     return foundAnnotationByAlias;
   }
 
   async update(id: string, updateAnnotationDto: UpdateAnnotationDto) {
+    const { alias, password, data } = updateAnnotationDto;
+
+    if (!alias) {
+      const updatedAnnotation = await this.annotationModel.updateOne(
+        { _id: id },
+        updateAnnotationDto,
+      );
+
+      return updatedAnnotation;
+    }
+
+    const foundAlias = await this.findByAliasOrId(alias);
+
+    if (foundAlias) {
+      throw new UnprocessableEntityException('Esse apelido já está em uso');
+    }
+
     const updatedAnnotation = await this.annotationModel.updateOne(
       { _id: id },
       updateAnnotationDto,
