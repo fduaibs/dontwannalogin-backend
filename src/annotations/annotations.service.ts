@@ -41,13 +41,16 @@ export class AnnotationsService {
     return foundAnnotation;
   }
 
-  async findByAliasOrId(aliasOrId: string): Promise<AnnotationDocument> {
+  async findByAliasOrId(
+    aliasOrId: string,
+    skipNotFoundErrors?: boolean,
+  ): Promise<AnnotationDocument> {
     if (!isValidObjectId(aliasOrId)) {
       const foundAnnotationByAlias = await this.annotationModel.findOne({
         alias: aliasOrId,
       });
 
-      if (!foundAnnotationByAlias)
+      if (!foundAnnotationByAlias && !skipNotFoundErrors)
         throw new NotFoundException('Apelido ou id da página não encontrado');
 
       return foundAnnotationByAlias;
@@ -55,7 +58,7 @@ export class AnnotationsService {
 
     const foundAnnotationById = await this.annotationModel.findById(aliasOrId);
 
-    if (!foundAnnotationById)
+    if (!foundAnnotationById && !skipNotFoundErrors)
       throw new NotFoundException('Apelido ou id da página não encontrado');
 
     return foundAnnotationById;
@@ -73,7 +76,7 @@ export class AnnotationsService {
       return updatedAnnotation;
     }
 
-    const foundAlias = await this.findByAliasOrId(alias);
+    const foundAlias = await this.findByAliasOrId(alias, true);
 
     if (foundAlias) {
       throw new UnprocessableEntityException('Esse apelido já está em uso');
