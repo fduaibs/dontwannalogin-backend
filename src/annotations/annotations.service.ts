@@ -1,6 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
 import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
@@ -37,19 +41,47 @@ export class AnnotationsService {
     return foundAnnotation;
   }
 
-  async findByAliasOrId(aliasOrId: string): Promise<AnnotationDocument> {
-    const foundAnnotationByAlias = await this.annotationModel.findOne({
-      alias: aliasOrId,
-    });
+  async findByAliasOrId(
+    aliasOrId: string,
+    skipNotFoundErrors?: boolean,
+  ): Promise<AnnotationDocument> {
+    if (!isValidObjectId(aliasOrId)) {
+      const foundAnnotationByAlias = await this.annotationModel.findOne({
+        alias: aliasOrId,
+      });
 
-    if (!foundAnnotationByAlias) {
-      return await this.annotationModel.findById(aliasOrId);
+      if (!foundAnnotationByAlias && !skipNotFoundErrors)
+        throw new NotFoundException('Apelido ou id da página não encontrado');
+
+      return foundAnnotationByAlias;
     }
 
-    return foundAnnotationByAlias;
+    const foundAnnotationById = await this.annotationModel.findById(aliasOrId);
+
+    if (!foundAnnotationById && !skipNotFoundErrors)
+      throw new NotFoundException('Apelido ou id da página não encontrado');
+
+    return foundAnnotationById;
   }
 
   async update(id: string, updateAnnotationDto: UpdateAnnotationDto) {
+    const { alias, password, data } = updateAnnotationDto;
+
+    if (!alias) {
+      const updatedAnnotation = await this.annotationModel.updateOne(
+        { _id: id },
+        updateAnnotationDto,
+      );
+
+      return updatedAnnotation;
+    }
+
+    const foundAlias = await this.findByAliasOrId(alias, true);
+
+    if (foundAlias) {
+      throw new UnprocessableEntityException('Esse apelido já está em uso');
+    }
+
     const updatedAnnotation = await this.annotationModel.updateOne(
       { _id: id },
       updateAnnotationDto,
