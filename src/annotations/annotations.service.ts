@@ -42,20 +42,23 @@ export class AnnotationsService {
   }
 
   async findByAliasOrId(aliasOrId: string): Promise<AnnotationDocument> {
-    const foundAnnotationByAlias = await this.annotationModel.findOne({
-      alias: aliasOrId,
-    });
+    if (!isValidObjectId(aliasOrId)) {
+      const foundAnnotationByAlias = await this.annotationModel.findOne({
+        alias: aliasOrId,
+      });
 
-    if (!foundAnnotationByAlias && isValidObjectId(aliasOrId)) {
-      const foundAnnotationById = await this.annotationModel.findById(
-        aliasOrId,
-      );
+      if (!foundAnnotationByAlias)
+        throw new NotFoundException('Apelido ou id da página não encontrado');
 
-      if (!foundAnnotationById)
-        throw new NotFoundException('Apelino ou Id da página não encontrado');
+      return foundAnnotationByAlias;
     }
 
-    return foundAnnotationByAlias;
+    const foundAnnotationById = await this.annotationModel.findById(aliasOrId);
+
+    if (!foundAnnotationById)
+      throw new NotFoundException('Apelido ou id da página não encontrado');
+
+    return foundAnnotationById;
   }
 
   async update(id: string, updateAnnotationDto: UpdateAnnotationDto) {
