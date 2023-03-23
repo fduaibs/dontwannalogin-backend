@@ -11,7 +11,12 @@ export class Annotation {
   @Prop({ maxlength: 32 })
   password?: string;
 
-  @Prop({ maxlength: 10000 })
+  @Prop({
+    maxlength: 10000,
+    set: (data) => {
+      return data;
+    },
+  })
   data?: string;
 }
 
