@@ -1,10 +1,10 @@
-name: Docker
+name: GCP-Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [main]
   pull_request:
-    branches: [master]
+    branches: [main]
 
 jobs:
   deploy:
