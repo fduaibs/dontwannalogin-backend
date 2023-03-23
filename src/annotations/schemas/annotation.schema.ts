@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { EncryptService } from '../../encrypt/encrypt.service';
 
 export type AnnotationDocument = Annotation & Document;
 
@@ -15,7 +14,7 @@ export class Annotation {
   @Prop({
     maxlength: 10000,
     set: (data) => {
-      return 'teste' + data;
+      return data;
     },
   })
   data?: string;
