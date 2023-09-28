@@ -1,21 +1,12 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import {
-  SwaggerModule,
-  DocumentBuilder,
-  SwaggerDocumentOptions,
-} from '@nestjs/swagger';
+import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config = new DocumentBuilder()
-    .setTitle('DontWannaLogin API')
-    .setDescription('Description')
-    .setVersion('1.0')
-    .addTag('default')
-    .build();
+  const config = new DocumentBuilder().setTitle('DontWannaLogin API').setDescription('Description').setVersion('1.0').addTag('default').build();
   const document = SwaggerModule.createDocument(app, config);
 
   const options: SwaggerDocumentOptions = {

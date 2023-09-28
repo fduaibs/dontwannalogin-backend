@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { AnnotationsService } from './annotations.service';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
@@ -22,9 +12,7 @@ export class AnnotationsController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(
-    @Body() createAnnotationDto: CreateAnnotationDto,
-  ): Promise<AnnotationDocument> {
+  async create(@Body() createAnnotationDto: CreateAnnotationDto): Promise<AnnotationDocument> {
     return await this.annotationsService.create(createAnnotationDto);
   }
 
@@ -42,18 +30,13 @@ export class AnnotationsController {
 
   @Get(':aliasOrId/find-by-alias-or-id')
   @HttpCode(HttpStatus.OK)
-  async findByAliasOrId(
-    @Param('aliasOrId') aliasOrId: string,
-  ): Promise<AnnotationDocument> {
+  async findByAliasOrId(@Param('aliasOrId') aliasOrId: string): Promise<AnnotationDocument> {
     return await this.annotationsService.findByAliasOrId(aliasOrId);
   }
 
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async update(
-    @Param('id') id: string,
-    @Body() updateAnnotationDto: UpdateAnnotationDto,
-  ): Promise<void> {
+  async update(@Param('id') id: string, @Body() updateAnnotationDto: UpdateAnnotationDto): Promise<void> {
     await this.annotationsService.update(id, updateAnnotationDto);
   }
 
