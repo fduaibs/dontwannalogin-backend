@@ -6,7 +6,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const config = new DocumentBuilder().setTitle('DontWannaLogin API').setDescription('Description').setVersion('1.0').addTag('default').build();
+  const config = new DocumentBuilder().setTitle('DontWannaLogin API').setDescription('Description').setVersion('1.0').build();
   const document = SwaggerModule.createDocument(app, config);
 
   const options: SwaggerDocumentOptions = {
