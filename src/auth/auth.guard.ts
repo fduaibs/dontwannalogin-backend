@@ -37,9 +37,15 @@ export class AuthGuard implements CanActivate {
 
     const [tokenUsername, tokenPassword] = decodedToken.split(':') ?? [];
 
-    const basicAuthUsername = isAdmOnly ? this.configService.get('BASIC_AUTH_ADM_USER') : this.configService.get('BASIC_AUTH_USER');
-    const basicAuthPassword = isAdmOnly ? this.configService.get('BASIC_AUTH_ADM_PASS') : this.configService.get('BASIC_AUTH_PASS');
+    const basicAuthUsername = this.configService.get('BASIC_AUTH_USER');
+    const basicAuthPassword = this.configService.get('BASIC_AUTH_PASS');
+    const basicAuthAdmUsername = this.configService.get('BASIC_AUTH_ADM_USER');
+    const basicAuthAdmPassword = this.configService.get('BASIC_AUTH_ADM_PASS');
 
-    return tokenUsername === basicAuthUsername && tokenPassword === basicAuthPassword;
+    const isAdmAllowed = tokenUsername === basicAuthAdmUsername && tokenPassword === basicAuthAdmPassword;
+
+    const isAllowed = tokenUsername === basicAuthUsername && tokenPassword === basicAuthPassword;
+
+    return isAdmOnly ? isAdmAllowed : isAdmAllowed || isAllowed;
   }
 }
