@@ -4,6 +4,7 @@ import { AnnotationsService } from './annotations.service';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
 import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
 import { AnnotationDocument } from './schemas/annotation.schema';
+import { Adm } from '../common/is-adm.decorator';
 
 @Controller('annotations')
 @ApiTags('Annotations Controller')
@@ -17,12 +18,14 @@ export class AnnotationsController {
     return await this.annotationsService.create(createAnnotationDto);
   }
 
+  @Adm()
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(): Promise<AnnotationDocument[]> {
     return await this.annotationsService.findAll();
   }
 
+  @Adm()
   @Get(':id')
   @HttpCode(HttpStatus.OK)
   async findOne(@Param('id') id: string): Promise<AnnotationDocument> {
@@ -41,6 +44,7 @@ export class AnnotationsController {
     await this.annotationsService.update(id, updateAnnotationDto);
   }
 
+  @Adm()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string): Promise<void> {

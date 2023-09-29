@@ -2,7 +2,8 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Request } from 'express';
-import { IS_PUBLIC_KEY } from '../common/isPublic.decorator';
+import { IS_PUBLIC_KEY } from '../common/is-public.decorator';
+import { IS_ADM_KEY } from '../common/is-adm.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -10,6 +11,7 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()]);
+    const isAdm = this.reflector.getAllAndOverride<boolean>(IS_ADM_KEY, [context.getHandler(), context.getClass()]);
 
     if (isPublic) return true;
 
@@ -19,7 +21,7 @@ export class AuthGuard implements CanActivate {
 
     if (!token) throw new UnauthorizedException();
 
-    const isAuthorized = this.verifyBasicToken(token);
+    const isAuthorized = this.verifyBasicToken(token, isAdm);
 
     return isAuthorized;
   }
@@ -30,13 +32,13 @@ export class AuthGuard implements CanActivate {
     return type === 'Basic' ? token : undefined;
   }
 
-  private verifyBasicToken(token: string): boolean {
+  private verifyBasicToken(token: string, isAdmOnly?: boolean): boolean {
     const decodedToken = Buffer.from(token, 'base64').toString('utf-8');
 
     const [tokenUsername, tokenPassword] = decodedToken.split(':') ?? [];
 
-    const basicAuthUsername = this.configService.get('BASIC_AUTH_USER');
-    const basicAuthPassword = this.configService.get('BASIC_AUTH_PASS');
+    const basicAuthUsername = isAdmOnly ? this.configService.get('BASIC_AUTH_ADM_USER') : this.configService.get('BASIC_AUTH_USER');
+    const basicAuthPassword = isAdmOnly ? this.configService.get('BASIC_AUTH_ADM_PASS') : this.configService.get('BASIC_AUTH_PASS');
 
     return tokenUsername === basicAuthUsername && tokenPassword === basicAuthPassword;
   }
