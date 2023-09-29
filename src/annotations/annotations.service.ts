@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
 import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
@@ -16,9 +12,7 @@ export class AnnotationsService {
     private readonly annotationModel: Model<AnnotationDocument>,
   ) {}
 
-  async create(
-    createAnnotationDto: CreateAnnotationDto,
-  ): Promise<AnnotationDocument> {
+  async create(createAnnotationDto: CreateAnnotationDto): Promise<AnnotationDocument> {
     const createdAnnotation = new this.annotationModel(createAnnotationDto);
 
     if (!createdAnnotation.alias) {
@@ -41,25 +35,20 @@ export class AnnotationsService {
     return foundAnnotation;
   }
 
-  async findByAliasOrId(
-    aliasOrId: string,
-    skipNotFoundErrors?: boolean,
-  ): Promise<AnnotationDocument> {
+  async findByAliasOrId(aliasOrId: string, skipNotFoundErrors?: boolean): Promise<AnnotationDocument> {
     if (!isValidObjectId(aliasOrId)) {
       const foundAnnotationByAlias = await this.annotationModel.findOne({
         alias: aliasOrId,
       });
 
-      if (!foundAnnotationByAlias && !skipNotFoundErrors)
-        throw new NotFoundException('Apelido ou id da página não encontrado');
+      if (!foundAnnotationByAlias && !skipNotFoundErrors) throw new NotFoundException('Apelido ou id da página não encontrado');
 
       return foundAnnotationByAlias;
     }
 
     const foundAnnotationById = await this.annotationModel.findById(aliasOrId);
 
-    if (!foundAnnotationById && !skipNotFoundErrors)
-      throw new NotFoundException('Apelido ou id da página não encontrado');
+    if (!foundAnnotationById && !skipNotFoundErrors) throw new NotFoundException('Apelido ou id da página não encontrado');
 
     return foundAnnotationById;
   }
@@ -68,10 +57,7 @@ export class AnnotationsService {
     const { alias, password, data } = updateAnnotationDto;
 
     if (!alias) {
-      const updatedAnnotation = await this.annotationModel.updateOne(
-        { _id: id },
-        updateAnnotationDto,
-      );
+      const updatedAnnotation = await this.annotationModel.updateOne({ _id: id }, updateAnnotationDto);
 
       return updatedAnnotation;
     }
@@ -82,10 +68,7 @@ export class AnnotationsService {
       throw new UnprocessableEntityException('Esse apelido já está em uso');
     }
 
-    const updatedAnnotation = await this.annotationModel.updateOne(
-      { _id: id },
-      updateAnnotationDto,
-    );
+    const updatedAnnotation = await this.annotationModel.updateOne({ _id: id }, updateAnnotationDto);
 
     return updatedAnnotation;
   }

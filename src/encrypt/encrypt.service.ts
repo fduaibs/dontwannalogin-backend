@@ -8,9 +8,7 @@ export class EncryptService {
   constructor(private configService: ConfigService) {}
 
   async aesEncrypt(dataToEncrypt: string, fixed?: boolean): Promise<string> {
-    const iv = fixed
-      ? Buffer.from(this.configService.get<string>('CRYPTO_AES_IV'))
-      : randomBytes(16);
+    const iv = fixed ? Buffer.from(this.configService.get<string>('CRYPTO_AES_IV')) : randomBytes(16);
 
     const password = this.configService.get<string>('CRYPTO_AES_PASSWORD');
 
@@ -20,10 +18,7 @@ export class EncryptService {
 
     const cipher = createCipheriv('aes-256-ctr', key, iv);
 
-    const encryptedData = Buffer.concat([
-      cipher.update(dataToEncrypt),
-      cipher.final(),
-    ]);
+    const encryptedData = Buffer.concat([cipher.update(dataToEncrypt), cipher.final()]);
 
     const encryptedDataAsBase64 = encryptedData.toString('base64');
     const ivAsBase64 = iv.toString('base64');
@@ -46,10 +41,7 @@ export class EncryptService {
 
     const decipher = createDecipheriv('aes-256-ctr', key, ivAsBuffer);
 
-    const decryptedData = Buffer.concat([
-      decipher.update(encryptedDataAsBuffer),
-      decipher.final(),
-    ]);
+    const decryptedData = Buffer.concat([decipher.update(encryptedDataAsBuffer), decipher.final()]);
 
     return decryptedData.toString('utf-8');
   }
