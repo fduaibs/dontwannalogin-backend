@@ -15,7 +15,7 @@ export class AuthGuard implements CanActivate {
 
     const request = context.switchToHttp().getRequest();
 
-    const token = this.extractTokenFromHeader(request);
+    const token = this.extractBasicTokenFromHeader(request);
 
     if (!token) throw new UnauthorizedException();
 
@@ -24,14 +24,16 @@ export class AuthGuard implements CanActivate {
     return isAuthorized;
   }
 
-  private extractTokenFromHeader(request: Request): string | undefined {
+  private extractBasicTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
 
     return type === 'Basic' ? token : undefined;
   }
 
   private verifyBasicToken(token: string): boolean {
-    const [tokenUsername, tokenPassword] = token?.split(':') ?? [];
+    const decodedToken = Buffer.from(token, 'base64').toString('utf-8');
+
+    const [tokenUsername, tokenPassword] = decodedToken.split(':') ?? [];
 
     const basicAuthUsername = this.configService.get('BASIC_AUTH_USER');
     const basicAuthPassword = this.configService.get('BASIC_AUTH_PASS');
