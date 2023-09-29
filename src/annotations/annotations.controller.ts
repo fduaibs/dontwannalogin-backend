@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
 import { AnnotationsService } from './annotations.service';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
 import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
@@ -7,6 +7,7 @@ import { AnnotationDocument } from './schemas/annotation.schema';
 
 @Controller('annotations')
 @ApiTags('Annotations Controller')
+@ApiBasicAuth()
 export class AnnotationsController {
   constructor(private readonly annotationsService: AnnotationsService) {}
 
