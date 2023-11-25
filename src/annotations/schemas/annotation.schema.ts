@@ -5,7 +5,7 @@ export type AnnotationDocument = Annotation & Document;
 
 @Schema({ timestamps: true })
 export class Annotation {
-  @Prop({ unique: true, index: true, maxlength: 25 })
+  @Prop({ unique: true, index: true, maxlength: 100 })
   alias?: string;
 
   @Prop({ maxlength: 32 })
