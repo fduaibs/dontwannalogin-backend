@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
 import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
-import { Adm } from '../../common/is-adm.decorator';
+import { Adm } from '../../common/decorators/is-adm.decorator';
 import { AnnotationsService } from './annotations.service';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
 import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
