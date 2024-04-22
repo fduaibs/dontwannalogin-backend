@@ -7,6 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder().addBasicAuth().setTitle('DontWannaLogin API').setDescription('Description').setVersion('1.0').build();
+
   const document = SwaggerModule.createDocument(app, config);
 
   const options: SwaggerDocumentOptions = {
@@ -14,7 +15,9 @@ async function bootstrap() {
   };
 
   SwaggerModule.setup('api', app, document);
+
   app.enableCors();
+
   const configService = app.get(ConfigService);
   const port = configService.get('PORT');
   await app.listen(port || 3000);
