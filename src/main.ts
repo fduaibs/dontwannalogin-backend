@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { SwaggerModule, DocumentBuilder, SwaggerDocumentOptions } from '@nestjs/swagger';
+import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
+import { SwaggerUiOptions } from '@nestjs/swagger/dist/interfaces/swagger-ui-options.interface';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -8,13 +9,15 @@ async function bootstrap() {
 
   const config = new DocumentBuilder().addBasicAuth().setTitle('DontWannaLogin API').setDescription('Description').setVersion('1.0').build();
 
-  const document = SwaggerModule.createDocument(app, config);
-
   const options: SwaggerDocumentOptions = {
     operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
   };
 
-  SwaggerModule.setup('api', app, document);
+  const document = SwaggerModule.createDocument(app, config, options);
+
+  const swaggerCustomOptions: SwaggerUiOptions = { defaultModelRendering: 'model', defaultModelsExpandDepth: 99, defaultModelExpandDepth: 99 };
+
+  SwaggerModule.setup('api', app, document, { swaggerOptions: swaggerCustomOptions });
 
   app.enableCors();
 
