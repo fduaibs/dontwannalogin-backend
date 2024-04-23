@@ -14,7 +14,6 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [context.getHandler(), context.getClass()]);
-    const isAdm = this.reflector.getAllAndOverride<boolean>(IS_ADM_KEY, [context.getHandler(), context.getClass()]);
 
     if (isPublic) return true;
 
@@ -23,6 +22,8 @@ export class AuthGuard implements CanActivate {
     const token = this.extractBasicTokenFromHeader(request);
 
     if (!token) throw new UnauthorizedException();
+
+    const isAdm = this.reflector.getAllAndOverride<boolean>(IS_ADM_KEY, [context.getHandler(), context.getClass()]);
 
     const isAuthorized = this.verifyBasicToken(token, isAdm);
 
@@ -49,6 +50,8 @@ export class AuthGuard implements CanActivate {
 
     const isAllowed = tokenUsername === basicAuthUsername && tokenPassword === basicAuthPassword;
 
-    return isAdmOnly ? isAdmAllowed : isAdmAllowed || isAllowed;
+    if (isAdmOnly) return isAdmAllowed;
+
+    return isAdmAllowed || isAllowed;
   }
 }
