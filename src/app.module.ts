@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './common/auth/auth.module';
 import { AnnotationsModule } from './features/annotations/annotations.module';
+import { ImagesModule } from './features/images/images.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AnnotationsModule } from './features/annotations/annotations.module';
       inject: [ConfigService],
     }),
     AnnotationsModule,
+    ImagesModule,
     AuthModule,
   ],
   controllers: [],
