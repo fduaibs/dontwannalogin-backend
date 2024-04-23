@@ -1,6 +1,20 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  MaxFileSizeValidator,
+  Param,
+  ParseFilePipe,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBasicAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { Sizes } from '../../common/constants/files.constants';
 import { FindAllResponseDto, FindOneResponseDto } from './dtos/image-response.dto';
 import { FileUploadDto } from './dtos/image.dto';
 import { ImagesService } from './images.service';
@@ -16,7 +30,15 @@ export class ImagesController {
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: FileUploadDto })
   @HttpCode(HttpStatus.CREATED)
-  async create(@UploadedFile() file: Express.Multer.File, @Body('path') path: string): Promise<void> {
+  async create(
+    @UploadedFile(
+      new ParseFilePipe({
+        validators: [new MaxFileSizeValidator({ maxSize: 5 * Sizes.MB })],
+      }),
+    )
+    file: Express.Multer.File,
+    @Body('path') path: string,
+  ): Promise<void> {
     await this.imagesService.createOne(path, file.originalname, file.buffer, file.mimetype);
   }
 
