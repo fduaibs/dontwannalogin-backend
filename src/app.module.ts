@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './common/auth/auth.module';
 import { AnnotationsModule } from './features/annotations/annotations.module';
 import { ImagesModule } from './features/images/images.module';
+import { OpenAIInternalModule } from './features/open-ai/open-ai-internal.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ImagesModule } from './features/images/images.module';
     }),
     AnnotationsModule,
     ImagesModule,
+    OpenAIInternalModule,
     AuthModule,
   ],
   controllers: [],
