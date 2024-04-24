@@ -1,8 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AnnotationsModule } from './annotations/annotations.module';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './common/auth/auth.module';
+import { AnnotationsModule } from './features/annotations/annotations.module';
+import { ImagesModule } from './features/images/images.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { AuthModule } from './auth/auth.module';
       inject: [ConfigService],
     }),
     AnnotationsModule,
+    ImagesModule,
     AuthModule,
   ],
   controllers: [],
