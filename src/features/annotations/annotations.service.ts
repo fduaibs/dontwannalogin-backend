@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { isValidObjectId, Model } from 'mongoose';
-import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
+import { Model, isValidObjectId } from 'mongoose';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
 import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
+import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
 
 @Injectable()
 export class AnnotationsService {
@@ -24,8 +24,9 @@ export class AnnotationsService {
     return savedEntry;
   }
 
-  async findAll(): Promise<AnnotationDocument[]> {
-    const foundAnnotationList = await this.annotationModel.find({});
+  async findAll(limit?: number, skip?: number, order?: string): Promise<AnnotationDocument[]> {
+    const foundAnnotationList = await this.annotationModel.find({}, {}, { limit: limit, skip: skip, sort: { createdAt: order } });
+
     return foundAnnotationList;
   }
 

@@ -1,5 +1,5 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post } from '@nestjs/common';
-import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query } from '@nestjs/common';
+import { ApiBasicAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Adm } from '../../common/decorators/is-adm.decorator';
 import { AnnotationsService } from './annotations.service';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
@@ -21,8 +21,12 @@ export class AnnotationsController {
   @Adm()
   @Get()
   @HttpCode(HttpStatus.OK)
-  async findAll(): Promise<AnnotationDocument[]> {
-    return await this.annotationsService.findAll();
+  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: 'offset', required: false })
+  @ApiQuery({ name: 'order', required: false, enum: ['asc', 'desc'] })
+  async findAll(@Query('limit') limit: number = 10, @Query('offset') offset: number = 0, @Query('order') order: string = 'asc'): Promise<AnnotationDocument[]> {
+    console.log(limit, offset, order);
+    return await this.annotationsService.findAll(limit, offset, order);
   }
 
   @Adm()
