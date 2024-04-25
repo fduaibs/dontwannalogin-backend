@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './common/auth/auth.module';
 import { AnnotationsModule } from './features/annotations/annotations.module';
 import { ImagesModule } from './features/images/images.module';
+import { TextToSpeechModule } from './features/text-to-speech/text-to-speech.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ImagesModule } from './features/images/images.module';
     }),
     AnnotationsModule,
     ImagesModule,
+    TextToSpeechModule,
     AuthModule,
   ],
   controllers: [],
