@@ -17,13 +17,13 @@ import { ApiBasicAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiTags } from '@nes
 import { Sizes } from '../../common/constants/files.constants';
 import { FindAllResponseDto, FindOneResponseDto } from './dtos/image-response.dto';
 import { FileUploadDto } from './dtos/image.dto';
-import { ImagesService } from './images.service';
+import { FilesService } from './files.service';
 
-@Controller('images')
-@ApiTags('Images Controller')
+@Controller('files')
+@ApiTags('Files Controller')
 @ApiBasicAuth()
-export class ImagesController {
-  constructor(private readonly imagesService: ImagesService) {}
+export class FilesController {
+  constructor(private readonly filesService: FilesService) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
@@ -39,31 +39,31 @@ export class ImagesController {
     file: Express.Multer.File,
     @Body('path') path: string,
   ): Promise<void> {
-    await this.imagesService.createOne(path, file.originalname, file.buffer, file.mimetype);
+    await this.filesService.createOne(path, file.originalname, file.buffer, file.mimetype);
   }
 
   @Get(':path/:filename')
   @HttpCode(HttpStatus.OK)
   @ApiOkResponse({ type: FindOneResponseDto })
   async findOne(@Param('path') path: string, @Param('filename') filename: string): Promise<FindOneResponseDto> {
-    return await this.imagesService.findOne(path, filename);
+    return await this.filesService.findOne(path, filename);
   }
 
   @Get(':path')
   @HttpCode(HttpStatus.OK)
   async findAll(@Param('path') path: string): Promise<FindAllResponseDto> {
-    return await this.imagesService.findAll(path);
+    return await this.filesService.findAll(path);
   }
 
   @Delete(':path/:filename')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeOne(@Param('path') path: string, @Param('filename') filename: string): Promise<void> {
-    return await this.imagesService.removeOne(path, filename);
+    return await this.filesService.removeOne(path, filename);
   }
 
   @Delete(':path')
   @HttpCode(HttpStatus.NO_CONTENT)
   async removeAll(@Param('path') path: string): Promise<void> {
-    return await this.imagesService.removeAll(path);
+    return await this.filesService.removeAll(path);
   }
 }

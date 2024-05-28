@@ -1,15 +1,15 @@
 import {
-  GetAllImageDataResponseInterface,
-  GetImageDataResponseInterface,
+  GetAllFileDataResponseInterface,
+  GetFileDataResponseInterface,
 } from '../../../repository/firebase-storage-repository/interfaces/firebase-storage-repository-response.interface';
 
-export class FindOneResponseDto implements GetImageDataResponseInterface {
+export class FindOneResponseDto implements GetFileDataResponseInterface {
   originalName?: string;
   contentType?: string;
   size: number;
   downloadURL: string;
 }
 
-export class FindAllResponseDto implements GetAllImageDataResponseInterface {
+export class FindAllResponseDto implements GetAllFileDataResponseInterface {
   fileDataList: FindOneResponseDto[];
 }

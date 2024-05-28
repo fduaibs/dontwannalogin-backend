@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { FirebaseStorage, UploadMetadata, deleteObject, getDownloadURL, getMetadata, listAll, ref, uploadBytes } from 'firebase/storage';
-import { GetAllImageDataResponseInterface, GetImageDataResponseInterface } from './interfaces/firebase-storage-repository-response.interface';
+import { GetAllFileDataResponseInterface, GetFileDataResponseInterface } from './interfaces/firebase-storage-repository-response.interface';
 
 @Injectable()
 export class FirebaseStorageRepository {
@@ -27,7 +27,7 @@ export class FirebaseStorageRepository {
     };
   }
 
-  async getDownloadUrl(path: string, filename: string): Promise<GetImageDataResponseInterface> {
+  async getDownloadUrl(path: string, filename: string): Promise<GetFileDataResponseInterface> {
     const storageRef = ref(this.firebaseStorage, `${path}/${filename}`);
 
     const downloadURL = await getDownloadURL(storageRef);
@@ -42,7 +42,7 @@ export class FirebaseStorageRepository {
     };
   }
 
-  async getAllDownloadUrls(path: string): Promise<GetAllImageDataResponseInterface> {
+  async getAllDownloadUrls(path: string): Promise<GetAllFileDataResponseInterface> {
     const storageRef = ref(this.firebaseStorage, path);
 
     const children = await listAll(storageRef);

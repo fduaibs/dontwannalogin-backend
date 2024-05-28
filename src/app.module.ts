@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './common/auth/auth.module';
 import { AnnotationsModule } from './features/annotations/annotations.module';
-import { ImagesModule } from './features/images/images.module';
+import { FilesModule } from './features/files/files.module';
 import { TextToSpeechModule } from './features/text-to-speech/text-to-speech.module';
 
 @Module({
@@ -19,7 +19,7 @@ import { TextToSpeechModule } from './features/text-to-speech/text-to-speech.mod
       inject: [ConfigService],
     }),
     AnnotationsModule,
-    ImagesModule,
+    FilesModule,
     TextToSpeechModule,
     AuthModule,
   ],
