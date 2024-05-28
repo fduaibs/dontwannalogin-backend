@@ -6,6 +6,7 @@ export interface UploadBytesResponseInterface extends UploadMetadata {
 }
 
 export interface GetFileDataResponseInterface {
+  uploadName: string;
   originalName?: string;
   contentType?: string;
   size: number;
