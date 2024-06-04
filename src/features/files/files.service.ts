@@ -17,8 +17,8 @@ export class FilesService {
     return await this.firebaseStorageRepository.getDownloadUrl(path, filename);
   }
 
-  async findAll(path: string): Promise<GetAllFileDataResponseInterface> {
-    return await this.firebaseStorageRepository.getAllDownloadUrls(path);
+  async findAll(path: string, limit?: number, offset?: number, order?: string): Promise<GetAllFileDataResponseInterface> {
+    return await this.firebaseStorageRepository.getAllDownloadUrls(path, limit, offset, order);
   }
 
   async removeOne(path: string, filename: string): Promise<void> {

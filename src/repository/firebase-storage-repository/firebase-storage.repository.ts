@@ -33,7 +33,7 @@ export class FirebaseStorageRepository {
 
     const downloadURL = await getDownloadURL(storageRef);
 
-    const { name, customMetadata, contentType, size } = await getMetadata(storageRef);
+    const { name, customMetadata, contentType, size, timeCreated, updated } = await getMetadata(storageRef);
 
     return {
       uploadName: name,
@@ -41,10 +41,12 @@ export class FirebaseStorageRepository {
       contentType: contentType,
       size: size,
       downloadURL,
+      createdAt: timeCreated,
+      updatedAt: updated,
     };
   }
 
-  async getAllDownloadUrls(path: string): Promise<GetAllFileDataResponseInterface> {
+  async getAllDownloadUrls(path: string, limit?: number, offset?: number, order?: string): Promise<GetAllFileDataResponseInterface> {
     const storageRef = ref(this.firebaseStorage, path);
 
     const children = await listAll(storageRef);
@@ -59,14 +61,23 @@ export class FirebaseStorageRepository {
     const fileDataList = await Promise.all(fileDataPromiseList);
 
     const fileDataListMapped: GetFileDataResponseInterface[] = fileDataList.map((fileData) => ({
-      uploadName: fileData[1].name,
-      orinalName: fileData[1].customMetadata?.originalName,
-      contentType: fileData[1].contentType,
-      size: fileData[1].size,
+      uploadName: fileData[1]?.name,
+      originalName: fileData[1]?.customMetadata?.originalName,
+      contentType: fileData[1]?.contentType,
+      size: fileData[1]?.size,
       downloadURL: fileData[0],
+      createdAt: fileData[1]?.timeCreated,
+      updatedAt: fileData[1]?.updated,
     }));
 
-    return { fileDataList: fileDataListMapped };
+    const fileDataListSorted =
+      order === 'asc'
+        ? fileDataListMapped.sort((fileA, fileB) => fileA.updatedAt.localeCompare(fileB.updatedAt))
+        : fileDataListMapped.sort((fileA, fileB) => fileB.updatedAt.localeCompare(fileA.updatedAt));
+
+    const fileDataListSliced = fileDataListSorted.slice(offset, offset + limit);
+
+    return { fileDataList: fileDataListSliced || [] };
   }
 
   async deleteOneObject(path: string, filename: string): Promise<void> {

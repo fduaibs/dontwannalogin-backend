@@ -11,6 +11,8 @@ export interface GetFileDataResponseInterface {
   contentType?: string;
   size: number;
   downloadURL: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GetAllFileDataResponseInterface {
