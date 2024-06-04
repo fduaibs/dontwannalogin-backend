@@ -1,9 +1,7 @@
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, isValidObjectId } from 'mongoose';
-import { CreateAnnotationDto } from './dtos/create-annotation.dto';
-import { isPasswordProtectedDto } from './dtos/is-password-protected.dto';
-import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
+import { CreateAnnotationDto, UpdateAnnotationDto, isPasswordProtectedDto } from './dtos/annotations.dto';
 import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
 
 @Injectable()

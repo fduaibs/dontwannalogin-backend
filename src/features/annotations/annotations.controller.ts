@@ -2,9 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBasicAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Adm } from '../../common/decorators/is-adm.decorator';
 import { AnnotationsService } from './annotations.service';
-import { CreateAnnotationDto } from './dtos/create-annotation.dto';
-import { isPasswordProtectedDto } from './dtos/is-password-protected.dto';
-import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
+import { CreateAnnotationDto, UpdateAnnotationDto, isPasswordProtectedDto } from './dtos/annotations.dto';
 import { AnnotationDocument } from './schemas/annotation.schema';
 
 @Controller('annotations')
