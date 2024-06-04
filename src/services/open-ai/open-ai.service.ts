@@ -47,7 +47,7 @@ export class OpenAIService {
 
   async questionize(text: string): Promise<SummarizeResponseInterface> {
     const completion = await this.openAIApi.chat.completions.create({
-      messages: [{ role: 'system', content: `Crie perguntas de revisão com base no texto a seguir: ${text}${this.endMessage}` }],
+      messages: [{ role: 'system', content: `Crie perguntas e respostas de revisão com base no texto a seguir: ${text}${this.endMessage}` }],
       model: this.model,
     });
 
