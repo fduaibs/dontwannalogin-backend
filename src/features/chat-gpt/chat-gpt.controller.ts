@@ -3,9 +3,9 @@ import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
 import { OpenAIService } from '../../services/open-ai/open-ai.service';
 
 @Controller('chat-gpt')
-@ApiTags('Chat GPT Controller')
+@ApiTags('ChatGPT Controller')
 @ApiBasicAuth()
-export class ChatGptController {
+export class ChatGPTController {
   constructor(private readonly openAIService: OpenAIService) {}
 
   @Post()
