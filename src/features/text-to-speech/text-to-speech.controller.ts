@@ -1,7 +1,7 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post, StreamableFile } from '@nestjs/common';
 import { ApiBasicAuth, ApiTags } from '@nestjs/swagger';
-import { TextToSpeechSinthesizeResponseDto } from './dtos/text-to-speech-response.dto';
-import { TextToSpeechSinthesizeDto } from './dtos/text-to-speech.dto';
+import { Readable } from 'stream';
+import { TextToSpeechSynthesizeDto } from './dtos/text-to-speech.dto';
 import { TextToSpeechService } from './text-to-speech.service';
 
 @Controller('text-to-speech')
@@ -10,9 +10,11 @@ import { TextToSpeechService } from './text-to-speech.service';
 export class TextToSpeechController {
   constructor(private readonly textToSpeechService: TextToSpeechService) {}
 
-  @Post('sinthesize')
+  @Post('synthesize')
   @HttpCode(HttpStatus.OK)
-  async create(@Body() sinthesizeDto: TextToSpeechSinthesizeDto): Promise<TextToSpeechSinthesizeResponseDto> {
-    return await this.textToSpeechService.sinthesize(sinthesizeDto.text, sinthesizeDto.contentType);
+  async create(@Body() synthesizeDto: TextToSpeechSynthesizeDto): Promise<StreamableFile> {
+    const fileBuffer = await this.textToSpeechService.synthesize(synthesizeDto.text, synthesizeDto.contentType);
+
+    return new StreamableFile(fileBuffer as Readable);
   }
 }

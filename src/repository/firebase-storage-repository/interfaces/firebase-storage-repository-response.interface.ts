@@ -5,13 +5,16 @@ export interface UploadBytesResponseInterface extends UploadMetadata {
   url: string;
 }
 
-export interface GetImageDataResponseInterface {
+export interface GetFileDataResponseInterface {
+  uploadName: string;
   originalName?: string;
   contentType?: string;
   size: number;
   downloadURL: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface GetAllImageDataResponseInterface {
-  fileDataList: GetImageDataResponseInterface[];
+export interface GetAllFileDataResponseInterface {
+  fileDataList: GetFileDataResponseInterface[];
 }
