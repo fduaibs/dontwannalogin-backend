@@ -3,6 +3,7 @@ import { ApiBasicAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Adm } from '../../common/decorators/is-adm.decorator';
 import { AnnotationsService } from './annotations.service';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
+import { isPasswordProtectedDto } from './dtos/is-password-protected.dto';
 import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
 import { AnnotationDocument } from './schemas/annotation.schema';
 
@@ -40,6 +41,12 @@ export class AnnotationsController {
   @HttpCode(HttpStatus.OK)
   async findByAliasOrId(@Param('aliasOrId') aliasOrId: string): Promise<AnnotationDocument> {
     return await this.annotationsService.findByAliasOrId(aliasOrId);
+  }
+
+  @Get(':aliasOrId/is-password-protected')
+  @HttpCode(HttpStatus.OK)
+  async isPasswordProtected(@Param('aliasOrId') aliasOrId: string): Promise<isPasswordProtectedDto> {
+    return await this.annotationsService.isPasswordProtected(aliasOrId);
   }
 
   @Patch(':id')

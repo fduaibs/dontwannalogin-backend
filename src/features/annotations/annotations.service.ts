@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, UnprocessableEntityException } from '@ne
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, isValidObjectId } from 'mongoose';
 import { CreateAnnotationDto } from './dtos/create-annotation.dto';
+import { isPasswordProtectedDto } from './dtos/is-password-protected.dto';
 import { UpdateAnnotationDto } from './dtos/update-annotation.dto';
 import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
 
@@ -52,6 +53,12 @@ export class AnnotationsService {
     if (!foundAnnotationById && !skipNotFoundErrors) throw new NotFoundException('Apelido ou id da página não encontrado');
 
     return foundAnnotationById;
+  }
+
+  async isPasswordProtected(aliasOrId: string): Promise<isPasswordProtectedDto> {
+    const foundAnnotation = await this.annotationModel.findOne({ alias: aliasOrId });
+
+    return { isPasswordProtected: Boolean(foundAnnotation.password) };
   }
 
   async update(id: string, updateAnnotationDto: UpdateAnnotationDto) {
