@@ -75,7 +75,6 @@ export class AnnotationsController {
     await this.annotationsService.remove(id);
   }
 
-  /*
   @Post('create-password')
   @ApiOperation({ summary: 'Cria uma senha para uma anotação.' })
   @HttpCode(HttpStatus.CREATED)
@@ -91,7 +90,7 @@ export class AnnotationsController {
     return await this.annotationsService.isPasswordProtected(aliasOrId);
   }
 
-  @Post('update-password/:aliasOrId')
+  @Patch(':aliasOrId/update-password')
   @ApiParam({ name: 'aliasOrId', required: true, description: 'Id ou apelido da anotação.' })
   @ApiOperation({ summary: 'Atualiza a senha de uma anotação.' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -99,7 +98,7 @@ export class AnnotationsController {
     return await this.annotationsService.updatePassword(aliasOrId, updatePasswordDto.currentEncryptedPassword, updatePasswordDto.newEncryptedPassword);
   }
 
-  @Delete('remove-password/:aliasOrId')
+  @Delete(':aliasOrId/remove-password)
   @ApiParam({ name: 'aliasOrId', required: true, description: 'Id ou apelido da anotação.' })
   @ApiOperation({ summary: 'Remove a senha de uma anotação.' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -146,5 +145,4 @@ export class AnnotationsController {
 
     return { match };
   }
-  */
 }
