@@ -35,18 +35,10 @@ export class CreatePasswordDto {
 export class RemovePasswordDto {
   @IsNotEmpty()
   @IsString()
-  aliasOrId: string;
-
-  @IsNotEmpty()
-  @IsString()
   currentEncryptedPassword: string;
 }
 
 export class UpdatePasswordDto {
-  @IsNotEmpty()
-  @IsString()
-  aliasOrId: string;
-
   @IsNotEmpty()
   @IsString()
   currentEncryptedPassword: string;

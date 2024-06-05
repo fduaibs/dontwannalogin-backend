@@ -75,6 +75,13 @@ export class AnnotationsController {
     await this.annotationsService.remove(id);
   }
 
+  @Post('create-password')
+  @ApiOperation({ summary: 'Cria uma senha para uma anotação.' })
+  @HttpCode(HttpStatus.CREATED)
+  async createPassword(@Body() createPasswordDto: CreatePasswordDto): Promise<void> {
+    return await this.annotationsService.createPassword(createPasswordDto.aliasOrId, createPasswordDto.newEncryptedPassword);
+  }
+
   @Get(':aliasOrId/is-password-protected')
   @ApiParam({ name: 'aliasOrId', required: true, description: 'Id ou apelido da anotação.' })
   @ApiOperation({ summary: 'Verifica se a anotação é protegida por senha.' })
@@ -83,29 +90,20 @@ export class AnnotationsController {
     return await this.annotationsService.isPasswordProtected(aliasOrId);
   }
 
-  @Post('create-password')
-  @ApiOperation({ summary: 'Cria uma senha para uma anotação.' })
-  @HttpCode(HttpStatus.CREATED)
-  async createPassword(@Body() createPasswordDto: CreatePasswordDto): Promise<void> {
-    return await this.annotationsService.createPassword(createPasswordDto.aliasOrId, createPasswordDto.newEncryptedPassword);
-  }
-
-  @Post('remove-password')
-  @ApiOperation({ summary: 'Remove a senha de uma anotação.' })
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async removePassword(@Body() removePasswordDto: RemovePasswordDto): Promise<void> {
-    return await this.annotationsService.removePassword(removePasswordDto.aliasOrId, removePasswordDto.currentEncryptedPassword);
-  }
-
-  @Post('update-password')
+  @Patch(':aliasOrId/update-password')
+  @ApiParam({ name: 'aliasOrId', required: true, description: 'Id ou apelido da anotação.' })
   @ApiOperation({ summary: 'Atualiza a senha de uma anotação.' })
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto): Promise<void> {
-    return await this.annotationsService.updatePassword(
-      updatePasswordDto.aliasOrId,
-      updatePasswordDto.currentEncryptedPassword,
-      updatePasswordDto.newEncryptedPassword,
-    );
+  async updatePassword(@Param('aliasOrId') aliasOrId: string, @Body() updatePasswordDto: UpdatePasswordDto): Promise<void> {
+    return await this.annotationsService.updatePassword(aliasOrId, updatePasswordDto.currentEncryptedPassword, updatePasswordDto.newEncryptedPassword);
+  }
+
+  @Delete(':aliasOrId/remove-password')
+  @ApiParam({ name: 'aliasOrId', required: true, description: 'Id ou apelido da anotação.' })
+  @ApiOperation({ summary: 'Remove a senha de uma anotação.' })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removePassword(@Param('aliasOrId') aliasOrId: string, @Body() removePasswordDto: RemovePasswordDto): Promise<void> {
+    return await this.annotationsService.removePassword(aliasOrId, removePasswordDto.currentEncryptedPassword);
   }
 
   @Adm()
