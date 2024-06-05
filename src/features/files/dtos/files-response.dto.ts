@@ -1,6 +1,7 @@
 import {
   GetAllFileDataResponseInterface,
   GetFileDataResponseInterface,
+  PaginationMetadataInterface,
 } from '../../../repository/firebase-storage-repository/interfaces/firebase-storage-repository-response.interface';
 
 export class FindOneFileResponseDto implements GetFileDataResponseInterface {
@@ -13,6 +14,11 @@ export class FindOneFileResponseDto implements GetFileDataResponseInterface {
   updatedAt: string;
 }
 
+export class PaginationMetadataDto implements PaginationMetadataInterface {
+  count: number;
+}
+
 export class FindAllFilesResponseDto implements GetAllFileDataResponseInterface {
   fileDataList: FindOneFileResponseDto[];
+  metadata: PaginationMetadataDto;
 }
