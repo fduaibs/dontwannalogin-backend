@@ -37,42 +37,48 @@ export class AnnotationsService {
     return foundAnnotation;
   }
 
-  async findByAliasOrId(aliasOrId: string, skipNotFoundErrors?: boolean, encryptedCurrentPassword?: string): Promise<AnnotationDocument> {
+  async findByAliasOrId(aliasOrId: string, skipNotFoundErrors?: boolean, encryptedCurrentPassword?: string): Promise<Omit<Annotation, 'password'>> {
     if (!isValidObjectId(aliasOrId)) {
-      const foundAnnotationByAlias = await this.annotationModel.findOne({
-        alias: aliasOrId,
-      });
+      const foundAnnotationByAlias = await this.annotationModel.findOne({ alias: aliasOrId }).lean();
 
       if (!foundAnnotationByAlias && !skipNotFoundErrors) throw new NotFoundException('Apelido ou id da página não encontrado');
 
-      if (!this.isPasswordProtected(aliasOrId)) return foundAnnotationByAlias;
+      const { isPasswordProtected } = await this.isPasswordProtected(aliasOrId);
+
+      const { password, ...foundAnnotationByAliasRest } = foundAnnotationByAlias;
+
+      if (!isPasswordProtected) return foundAnnotationByAliasRest;
 
       const decryptedCurrentPassword = await this.encryptService.aesDecrypt(encryptedCurrentPassword);
 
-      const isPasswordMatch = await this.encryptService.bCryptMatch(decryptedCurrentPassword, foundAnnotationByAlias?.password);
+      const isPasswordMatch = await this.encryptService.bCryptMatch(decryptedCurrentPassword, password);
 
       if (!isPasswordMatch) throw new ForbiddenException('Senha inválida');
 
-      return foundAnnotationByAlias;
+      return foundAnnotationByAliasRest;
     }
 
-    const foundAnnotationById = await this.annotationModel.findById(aliasOrId);
+    const foundAnnotationById = await this.annotationModel.findById(aliasOrId).lean();
 
     if (!foundAnnotationById && !skipNotFoundErrors) throw new NotFoundException('Apelido ou id da página não encontrado');
 
-    if (!this.isPasswordProtected(aliasOrId)) return foundAnnotationById;
+    const { isPasswordProtected } = await this.isPasswordProtected(aliasOrId);
+
+    const { password, ...foundAnnotationByIdRest } = foundAnnotationById;
+
+    if (!isPasswordProtected) return foundAnnotationByIdRest;
 
     const decryptedCurrentPassword = await this.encryptService.aesDecrypt(encryptedCurrentPassword);
 
-    const isPasswordMatch = await this.encryptService.bCryptMatch(decryptedCurrentPassword, foundAnnotationById?.password);
+    const isPasswordMatch = await this.encryptService.bCryptMatch(decryptedCurrentPassword, password);
 
     if (!isPasswordMatch) throw new ForbiddenException('Senha inválida');
 
-    return foundAnnotationById;
+    return foundAnnotationByIdRest;
   }
 
   async update(id: string, updateAnnotationDto: UpdateAnnotationDto) {
-    const { alias, password, data } = updateAnnotationDto;
+    const { alias } = updateAnnotationDto;
 
     if (!alias) {
       const updatedAnnotation = await this.annotationModel.updateOne({ _id: id }, updateAnnotationDto);
@@ -102,11 +108,13 @@ export class AnnotationsService {
   async isPasswordProtected(aliasOrId: string): Promise<isPasswordProtectedDto> {
     const foundAnnotation = await this.annotationModel.findOne({ alias: aliasOrId });
 
-    return { isPasswordProtected: Boolean(foundAnnotation.password) };
+    if (!foundAnnotation) throw new NotFoundException('Anotação não encontrada');
+
+    return { isPasswordProtected: Boolean(foundAnnotation?.password) };
   }
 
   async createPassword(aliasOrId: string, newEncryptedPassword: string): Promise<void> {
-    const isPasswordProtected = await this.isPasswordProtected(aliasOrId);
+    const { isPasswordProtected } = await this.isPasswordProtected(aliasOrId);
 
     if (isPasswordProtected) throw new UnprocessableEntityException('Já existe senha');
 
@@ -126,11 +134,13 @@ export class AnnotationsService {
 
     if (!isAllowed) throw new UnprocessableEntityException('Senha atual inválida');
 
-    await this.annotationModel.findOneAndUpdate({ alias: aliasOrId }, { password: '' });
+    await this.annotationModel.findOneAndUpdate({ alias: aliasOrId }, { password: null });
   }
 
   async updatePassword(aliasOrId: string, currentEncryptedPassword: string, newEncryptedPassword: string): Promise<void> {
     const foundAnnotation = await this.annotationModel.findOne({ alias: aliasOrId }).lean();
+
+    if (!foundAnnotation) throw new NotFoundException('Anotação não encontrada');
 
     const plainTextCurrentPassword = await this.encryptService.aesDecrypt(currentEncryptedPassword);
 

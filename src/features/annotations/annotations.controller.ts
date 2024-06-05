@@ -14,7 +14,7 @@ import {
   UpdatePasswordDto,
   isPasswordProtectedDto,
 } from './dtos/annotations.dto';
-import { AnnotationDocument } from './schemas/annotation.schema';
+import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
 
 @Controller('annotations')
 @ApiTags('Annotations Controller')
@@ -47,8 +47,9 @@ export class AnnotationsController {
 
   @Get(':aliasOrId/find-by-alias-or-id')
   @HttpCode(HttpStatus.OK)
-  async findByAliasOrId(@Param('aliasOrId') aliasOrId: string): Promise<AnnotationDocument> {
-    return await this.annotationsService.findByAliasOrId(aliasOrId);
+  @ApiQuery({ name: 'auth', required: false })
+  async findByAliasOrId(@Param('aliasOrId') aliasOrId: string, @Query('auth') encryptedCurrentPassword?: string): Promise<Omit<Annotation, 'password'>> {
+    return await this.annotationsService.findByAliasOrId(aliasOrId, false, encryptedCurrentPassword);
   }
 
   @Patch(':id')
