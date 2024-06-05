@@ -7,7 +7,7 @@ import { GetAllFileDataResponseInterface, GetFileDataResponseInterface } from '.
 export class FirebaseStorageRepository {
   constructor(@Inject('FIREBASE_STORAGE_INJECTION_TOKEN') private readonly firebaseStorage: FirebaseStorage) {}
 
-  async uploadBytes(path: string, filename: string, fileData: any, contentType: string): Promise<void> {
+  async uploadBytes(path: string, filename: string, fileData: any, contentType: string): Promise<GetFileDataResponseInterface> {
     const uuid = randomUUID();
 
     const fileExtensionRegex = /\.[a-zA-Z0-9]+?$/g;
@@ -25,7 +25,19 @@ export class FirebaseStorageRepository {
       },
     };
 
-    await uploadBytes(storageRef, fileData, metadata);
+    const bytesReturn = await uploadBytes(storageRef, fileData, metadata);
+
+    const downloadURL = await getDownloadURL(bytesReturn.ref);
+
+    return {
+      uploadName: bytesReturn.metadata.name,
+      originalName: bytesReturn.metadata.customMetadata.originalName,
+      contentType: bytesReturn.metadata.contentType,
+      size: bytesReturn.metadata.size,
+      downloadURL,
+      createdAt: bytesReturn.metadata.timeCreated,
+      updatedAt: bytesReturn.metadata.updated,
+    };
   }
 
   async getDownloadUrl(path: string, filename: string): Promise<GetFileDataResponseInterface> {

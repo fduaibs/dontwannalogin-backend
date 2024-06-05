@@ -9,8 +9,8 @@ import {
 export class FilesService {
   constructor(private readonly firebaseStorageRepository: FirebaseStorageRepository) {}
 
-  async createOne(path: string, filename: string, fileData: any, contentType: string): Promise<void> {
-    await this.firebaseStorageRepository.uploadBytes(path, filename, fileData, contentType);
+  async createOne(path: string, filename: string, fileData: any, contentType: string): Promise<GetFileDataResponseInterface> {
+    return await this.firebaseStorageRepository.uploadBytes(path, filename, fileData, contentType);
   }
 
   async findOne(path: string, filename: string): Promise<GetFileDataResponseInterface> {
