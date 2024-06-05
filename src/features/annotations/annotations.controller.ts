@@ -75,6 +75,7 @@ export class AnnotationsController {
     await this.annotationsService.remove(id);
   }
 
+  /*
   @Post('create-password')
   @ApiOperation({ summary: 'Cria uma senha para uma anotação.' })
   @HttpCode(HttpStatus.CREATED)
@@ -145,4 +146,5 @@ export class AnnotationsController {
 
     return { match };
   }
+  */
 }
