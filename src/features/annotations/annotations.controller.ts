@@ -2,8 +2,19 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBasicAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Adm } from '../../common/decorators/is-adm.decorator';
 import { AnnotationsService } from './annotations.service';
-import { CreateAnnotationDto, UpdateAnnotationDto, isPasswordProtectedDto } from './dtos/annotations.dto';
-import { AnnotationDocument } from './schemas/annotation.schema';
+import {
+  CompareDto,
+  CreateAnnotationDto,
+  CreatePasswordDto,
+  DecryptDto,
+  EncryptDto,
+  HashDto,
+  RemovePasswordDto,
+  UpdateAnnotationDto,
+  UpdatePasswordDto,
+  isPasswordProtectedDto,
+} from './dtos/annotations.dto';
+import { Annotation, AnnotationDocument } from './schemas/annotation.schema';
 
 @Controller('annotations')
 @ApiTags('Annotations Controller')
@@ -24,7 +35,6 @@ export class AnnotationsController {
   @ApiQuery({ name: 'offset', required: false })
   @ApiQuery({ name: 'order', required: false, enum: ['asc', 'desc'] })
   async findAll(@Query('limit') limit: number = 10, @Query('offset') offset: number = 0, @Query('order') order: string = 'asc'): Promise<AnnotationDocument[]> {
-    console.log(limit, offset, order);
     return await this.annotationsService.findAll(limit, offset, order);
   }
 
@@ -37,14 +47,9 @@ export class AnnotationsController {
 
   @Get(':aliasOrId/find-by-alias-or-id')
   @HttpCode(HttpStatus.OK)
-  async findByAliasOrId(@Param('aliasOrId') aliasOrId: string): Promise<AnnotationDocument> {
-    return await this.annotationsService.findByAliasOrId(aliasOrId);
-  }
-
-  @Get(':aliasOrId/is-password-protected')
-  @HttpCode(HttpStatus.OK)
-  async isPasswordProtected(@Param('aliasOrId') aliasOrId: string): Promise<isPasswordProtectedDto> {
-    return await this.annotationsService.isPasswordProtected(aliasOrId);
+  @ApiQuery({ name: 'auth', required: false })
+  async findByAliasOrId(@Param('aliasOrId') aliasOrId: string, @Query('auth') encryptedCurrentPassword?: string): Promise<Omit<Annotation, 'password'>> {
+    return await this.annotationsService.findByAliasOrId(aliasOrId, false, encryptedCurrentPassword);
   }
 
   @Patch(':id')
@@ -58,5 +63,69 @@ export class AnnotationsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string): Promise<void> {
     await this.annotationsService.remove(id);
+  }
+
+  @Get(':aliasOrId/is-password-protected')
+  @HttpCode(HttpStatus.OK)
+  async isPasswordProtected(@Param('aliasOrId') aliasOrId: string): Promise<isPasswordProtectedDto> {
+    return await this.annotationsService.isPasswordProtected(aliasOrId);
+  }
+
+  @Post('create-password')
+  @HttpCode(HttpStatus.CREATED)
+  async createPassword(@Body() createPasswordDto: CreatePasswordDto): Promise<void> {
+    return await this.annotationsService.createPassword(createPasswordDto.aliasOrId, createPasswordDto.newEncryptedPassword);
+  }
+
+  @Post('remove-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removePassword(@Body() removePasswordDto: RemovePasswordDto): Promise<void> {
+    return await this.annotationsService.removePassword(removePasswordDto.aliasOrId, removePasswordDto.currentEncryptedPassword);
+  }
+
+  @Post('update-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto): Promise<void> {
+    return await this.annotationsService.updatePassword(
+      updatePasswordDto.aliasOrId,
+      updatePasswordDto.currentEncryptedPassword,
+      updatePasswordDto.newEncryptedPassword,
+    );
+  }
+
+  @Adm()
+  @Post('encrypt')
+  @HttpCode(HttpStatus.OK)
+  async encrypt(@Body() encryptDto: EncryptDto): Promise<{ encrypted: string }> {
+    const encrypted = await this.annotationsService.encrypt(encryptDto.plainText);
+
+    return { encrypted };
+  }
+
+  @Adm()
+  @Post('decrypt')
+  @HttpCode(HttpStatus.OK)
+  async decrypt(@Body() decryptDto: DecryptDto): Promise<{ decrypted: string }> {
+    const decrypted = await this.annotationsService.decrypt(decryptDto.token);
+
+    return { decrypted };
+  }
+
+  @Adm()
+  @Post('hash')
+  @HttpCode(HttpStatus.OK)
+  async hash(@Body() hashDto: HashDto): Promise<{ hashed: string }> {
+    const hashed = await this.annotationsService.hash(hashDto.plainText);
+
+    return { hashed };
+  }
+
+  @Adm()
+  @Post('compare')
+  @HttpCode(HttpStatus.OK)
+  async compare(@Body() compareDto: CompareDto): Promise<{ match: boolean }> {
+    const match = await this.annotationsService.compare(compareDto.plainText, compareDto.hash);
+
+    return { match };
   }
 }

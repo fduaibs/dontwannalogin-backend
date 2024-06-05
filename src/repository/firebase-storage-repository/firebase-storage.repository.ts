@@ -77,7 +77,7 @@ export class FirebaseStorageRepository {
 
     const fileDataListSliced = fileDataListSorted.slice(offset, offset + limit);
 
-    return { fileDataList: fileDataListSliced || [] };
+    return { fileDataList: fileDataListSliced || [], metadata: { count: fileDataListSorted.length } };
   }
 
   async deleteOneObject(path: string, filename: string): Promise<void> {

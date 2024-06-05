@@ -15,6 +15,10 @@ export interface GetFileDataResponseInterface {
   updatedAt: string;
 }
 
+export interface PaginationMetadataInterface {
+  count: number;
+}
 export interface GetAllFileDataResponseInterface {
   fileDataList: GetFileDataResponseInterface[];
+  metadata: PaginationMetadataInterface;
 }
