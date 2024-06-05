@@ -86,7 +86,7 @@ export class AnnotationsService {
       return updatedAnnotation;
     }
 
-    const foundAlias = await this.annotationModel.findOne({ alias: id });
+    const foundAlias = await this.annotationModel.findOne({ alias: alias });
 
     if (foundAlias) {
       throw new UnprocessableEntityException('Esse apelido já está em uso');
