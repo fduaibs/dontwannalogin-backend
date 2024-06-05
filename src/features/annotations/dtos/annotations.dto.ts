@@ -55,3 +55,31 @@ export class UpdatePasswordDto {
   @IsString()
   newEncryptedPassword: string;
 }
+
+export class EncryptDto {
+  @IsNotEmpty()
+  @IsString()
+  plainText: string;
+}
+
+export class DecryptDto {
+  @IsNotEmpty()
+  @IsString()
+  token: string;
+}
+
+export class HashDto {
+  @IsNotEmpty()
+  @IsString()
+  plainText: string;
+}
+
+export class CompareDto {
+  @IsNotEmpty()
+  @IsString()
+  plainText: string;
+
+  @IsNotEmpty()
+  @IsString()
+  hash: string;
+}

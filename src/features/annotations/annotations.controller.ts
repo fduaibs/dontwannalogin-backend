@@ -3,8 +3,12 @@ import { ApiBasicAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Adm } from '../../common/decorators/is-adm.decorator';
 import { AnnotationsService } from './annotations.service';
 import {
+  CompareDto,
   CreateAnnotationDto,
   CreatePasswordDto,
+  DecryptDto,
+  EncryptDto,
+  HashDto,
   RemovePasswordDto,
   UpdateAnnotationDto,
   UpdatePasswordDto,
@@ -86,5 +90,41 @@ export class AnnotationsController {
       updatePasswordDto.currentEncryptedPassword,
       updatePasswordDto.newEncryptedPassword,
     );
+  }
+
+  @Adm()
+  @Post('encrypt')
+  @HttpCode(HttpStatus.OK)
+  async encrypt(@Body() encryptDto: EncryptDto): Promise<{ encrypted: string }> {
+    const encrypted = await this.annotationsService.encrypt(encryptDto.plainText);
+
+    return { encrypted };
+  }
+
+  @Adm()
+  @Post('decrypt')
+  @HttpCode(HttpStatus.OK)
+  async decrypt(@Body() decryptDto: DecryptDto): Promise<{ decrypted: string }> {
+    const decrypted = await this.annotationsService.decrypt(decryptDto.token);
+
+    return { decrypted };
+  }
+
+  @Adm()
+  @Post('hash')
+  @HttpCode(HttpStatus.OK)
+  async hash(@Body() hashDto: HashDto): Promise<{ hashed: string }> {
+    const hashed = await this.annotationsService.hash(hashDto.plainText);
+
+    return { hashed };
+  }
+
+  @Adm()
+  @Post('compare')
+  @HttpCode(HttpStatus.OK)
+  async compare(@Body() compareDto: CompareDto): Promise<{ match: boolean }> {
+    const match = await this.annotationsService.compare(compareDto.plainText, compareDto.hash);
+
+    return { match };
   }
 }

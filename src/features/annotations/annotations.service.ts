@@ -144,4 +144,20 @@ export class AnnotationsService {
 
     await this.annotationModel.findOneAndUpdate({ alias: aliasOrId }, { password: hashedNewPassword });
   }
+
+  async encrypt(plainText: string): Promise<string> {
+    return await this.encryptService.aesEncrypt(plainText);
+  }
+
+  async decrypt(token: string): Promise<string> {
+    return await this.encryptService.aesDecrypt(token);
+  }
+
+  async hash(plainText: string): Promise<string> {
+    return await this.encryptService.bCryptHash(plainText);
+  }
+
+  async compare(plainText: string, hash: string): Promise<boolean> {
+    return await this.encryptService.bCryptMatch(plainText, hash);
+  }
 }
