@@ -7,8 +7,8 @@ import {
   CreatePasswordDto,
   RemovePasswordDto,
   UpdateAnnotationDto,
+  UpdatePasswordDto,
   isPasswordProtectedDto,
-  updatePasswordDto,
 } from './dtos/annotations.dto';
 import { AnnotationDocument } from './schemas/annotation.schema';
 
@@ -80,7 +80,7 @@ export class AnnotationsController {
 
   @Post('update-password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePassword(@Body() updatePasswordDto: updatePasswordDto): Promise<void> {
+  async updatePassword(@Body() updatePasswordDto: UpdatePasswordDto): Promise<void> {
     return await this.annotationsService.updatePassword(
       updatePasswordDto.aliasOrId,
       updatePasswordDto.currentEncryptedPassword,

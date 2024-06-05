@@ -42,7 +42,7 @@ export class RemovePasswordDto {
   currentEncryptedPassword: string;
 }
 
-export class updatePasswordDto {
+export class UpdatePasswordDto {
   @IsNotEmpty()
   @IsString()
   aliasOrId: string;
