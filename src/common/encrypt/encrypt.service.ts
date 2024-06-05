@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import * as bcrypt from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes, scrypt } from 'crypto';
 import { promisify } from 'util';
-import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class EncryptService {
@@ -44,5 +45,19 @@ export class EncryptService {
     const decryptedData = Buffer.concat([decipher.update(encryptedDataAsBuffer), decipher.final()]);
 
     return decryptedData.toString('utf-8');
+  }
+
+  async bCryptHash(plainText: string): Promise<string> {
+    const saltOrRounds = this.configService.get<number>('BCRYPT_ROUNDS');
+
+    const hash = await bcrypt.hash(plainText, saltOrRounds);
+
+    return hash;
+  }
+
+  async bCryptMatch(plainText: string, hash: string): Promise<boolean> {
+    const isMatch = await bcrypt.compare(plainText, hash);
+
+    return isMatch;
   }
 }
