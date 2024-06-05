@@ -2,7 +2,14 @@ import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post
 import { ApiBasicAuth, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Adm } from '../../common/decorators/is-adm.decorator';
 import { AnnotationsService } from './annotations.service';
-import { CreateAnnotationDto, UpdateAnnotationDto, isPasswordProtectedDto } from './dtos/annotations.dto';
+import {
+  CreateAnnotationDto,
+  CreatePasswordDto,
+  RemovePasswordDto,
+  UpdateAnnotationDto,
+  isPasswordProtectedDto,
+  updatePasswordDto,
+} from './dtos/annotations.dto';
 import { AnnotationDocument } from './schemas/annotation.schema';
 
 @Controller('annotations')
@@ -24,7 +31,6 @@ export class AnnotationsController {
   @ApiQuery({ name: 'offset', required: false })
   @ApiQuery({ name: 'order', required: false, enum: ['asc', 'desc'] })
   async findAll(@Query('limit') limit: number = 10, @Query('offset') offset: number = 0, @Query('order') order: string = 'asc'): Promise<AnnotationDocument[]> {
-    console.log(limit, offset, order);
     return await this.annotationsService.findAll(limit, offset, order);
   }
 
@@ -41,12 +47,6 @@ export class AnnotationsController {
     return await this.annotationsService.findByAliasOrId(aliasOrId);
   }
 
-  @Get(':aliasOrId/is-password-protected')
-  @HttpCode(HttpStatus.OK)
-  async isPasswordProtected(@Param('aliasOrId') aliasOrId: string): Promise<isPasswordProtectedDto> {
-    return await this.annotationsService.isPasswordProtected(aliasOrId);
-  }
-
   @Patch(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   async update(@Param('id') id: string, @Body() updateAnnotationDto: UpdateAnnotationDto): Promise<void> {
@@ -58,5 +58,33 @@ export class AnnotationsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('id') id: string): Promise<void> {
     await this.annotationsService.remove(id);
+  }
+
+  @Get(':aliasOrId/is-password-protected')
+  @HttpCode(HttpStatus.OK)
+  async isPasswordProtected(@Param('aliasOrId') aliasOrId: string): Promise<isPasswordProtectedDto> {
+    return await this.annotationsService.isPasswordProtected(aliasOrId);
+  }
+
+  @Post('create-password')
+  @HttpCode(HttpStatus.CREATED)
+  async createPassword(@Body() createPasswordDto: CreatePasswordDto): Promise<void> {
+    return await this.annotationsService.createPassword(createPasswordDto.aliasOrId, createPasswordDto.newEncryptedPassword);
+  }
+
+  @Post('remove-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removePassword(@Body() removePasswordDto: RemovePasswordDto): Promise<void> {
+    return await this.annotationsService.removePassword(removePasswordDto.aliasOrId, removePasswordDto.currentEncryptedPassword);
+  }
+
+  @Post('update-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async updatePassword(@Body() updatePasswordDto: updatePasswordDto): Promise<void> {
+    return await this.annotationsService.updatePassword(
+      updatePasswordDto.aliasOrId,
+      updatePasswordDto.currentEncryptedPassword,
+      updatePasswordDto.newEncryptedPassword,
+    );
   }
 }

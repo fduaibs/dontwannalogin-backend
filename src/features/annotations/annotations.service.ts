@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, isValidObjectId } from 'mongoose';
 import { EncryptService } from '../../common/encrypt/encrypt.service';
@@ -105,12 +105,12 @@ export class AnnotationsService {
     return { isPasswordProtected: Boolean(foundAnnotation.password) };
   }
 
-  async createPassword(aliasOrId: string, encryptedNewPassword: string) {
+  async createPassword(aliasOrId: string, newEncryptedPassword: string): Promise<void> {
     const isPasswordProtected = await this.isPasswordProtected(aliasOrId);
 
     if (isPasswordProtected) throw new UnprocessableEntityException('Já existe senha');
 
-    const decryptedNewPassword = await this.encryptService.aesDecrypt(encryptedNewPassword);
+    const decryptedNewPassword = await this.encryptService.aesDecrypt(newEncryptedPassword);
 
     const hashedNewPassword = await this.encryptService.bCryptHash(decryptedNewPassword);
 
@@ -124,7 +124,7 @@ export class AnnotationsService {
 
     const isAllowed = await this.encryptService.bCryptMatch(plainTextPassword, foundAnnotation?.password);
 
-    if (!isAllowed) throw new UnauthorizedException('Senha atual inválida');
+    if (!isAllowed) throw new UnprocessableEntityException('Senha atual inválida');
 
     await this.annotationModel.findOneAndUpdate({ alias: aliasOrId }, { password: '' });
   }
@@ -136,7 +136,7 @@ export class AnnotationsService {
 
     const isAllowed = await this.encryptService.bCryptMatch(plainTextCurrentPassword, foundAnnotation?.password);
 
-    if (!isAllowed) throw new UnauthorizedException('Senha atual inválida');
+    if (!isAllowed) throw new UnprocessableEntityException('Senha atual inválida');
 
     const plainTextNewPassword = await this.encryptService.aesDecrypt(newEncryptedPassword);
 
