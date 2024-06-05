@@ -16,7 +16,7 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBasicAuth, ApiBody, ApiConsumes, ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Sizes } from '../../common/constants/files.constants';
-import { FindAllFilesResponseDto, FindOneFileResponseDto } from './dtos/files-response.dto';
+import { CreateFileResponseDto, FindAllFilesResponseDto, FindOneFileResponseDto } from './dtos/files-response.dto';
 import { FileUploadDto, findAllFilesQueryDto } from './dtos/files.dto';
 import { FilesService } from './files.service';
 
@@ -30,7 +30,8 @@ export class FilesController {
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
   @ApiBody({ type: FileUploadDto })
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
+  @ApiOkResponse({ type: FindOneFileResponseDto })
   async create(
     @UploadedFile(
       new ParseFilePipe({
@@ -39,8 +40,8 @@ export class FilesController {
     )
     file: Express.Multer.File,
     @Body('path') path: string,
-  ): Promise<void> {
-    await this.filesService.createOne(path, file.originalname, file.buffer, file.mimetype);
+  ): Promise<CreateFileResponseDto> {
+    return await this.filesService.createOne(path, file.originalname, file.buffer, file.mimetype);
   }
 
   @Get(':path/:filename')
