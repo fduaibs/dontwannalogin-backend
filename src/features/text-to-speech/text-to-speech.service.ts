@@ -6,7 +6,7 @@ import { WatsonService } from '../../services/watson/watson.service';
 export class TextToSpeechService {
   constructor(private readonly watsonService: WatsonService) {}
 
-  async sinthesize(text: string, contentType?: string): Promise<SinthesizeResponseInterface> {
+  async synthesize(text: string, contentType?: string): Promise<SinthesizeResponseInterface> {
     return await this.watsonService.sinthesize(text, contentType);
   }
 }
