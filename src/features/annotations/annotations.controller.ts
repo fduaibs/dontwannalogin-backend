@@ -90,7 +90,7 @@ export class AnnotationsController {
     return await this.annotationsService.isPasswordProtected(aliasOrId);
   }
 
-  @Patch(':aliasOrId/update-password')
+  @Post('update-password/:aliasOrId')
   @ApiParam({ name: 'aliasOrId', required: true, description: 'Id ou apelido da anotação.' })
   @ApiOperation({ summary: 'Atualiza a senha de uma anotação.' })
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -98,7 +98,7 @@ export class AnnotationsController {
     return await this.annotationsService.updatePassword(aliasOrId, updatePasswordDto.currentEncryptedPassword, updatePasswordDto.newEncryptedPassword);
   }
 
-  @Delete(':aliasOrId/remove-password')
+  @Delete('remove-password/:aliasOrId')
   @ApiParam({ name: 'aliasOrId', required: true, description: 'Id ou apelido da anotação.' })
   @ApiOperation({ summary: 'Remove a senha de uma anotação.' })
   @HttpCode(HttpStatus.NO_CONTENT)
