@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { createCipheriv, createDecipheriv, randomBytes, scrypt } from 'crypto';
@@ -9,6 +9,8 @@ export class EncryptService {
   constructor(private configService: ConfigService) {}
 
   async aesEncrypt(dataToEncrypt: string, fixed?: boolean): Promise<string> {
+    if (!dataToEncrypt) throw new UnprocessableEntityException('Erro ao criar senha');
+
     const iv = fixed ? Buffer.from(this.configService.get<string>('CRYPTO_AES_IV')) : randomBytes(16);
 
     const password = this.configService.get<string>('CRYPTO_AES_PASSWORD');
@@ -28,6 +30,8 @@ export class EncryptService {
   }
 
   async aesDecrypt(token: string): Promise<string> {
+    if (!token) throw new UnprocessableEntityException('Erro ao validar');
+
     const [dataToDecryptAsBase64, ivAsBase64] = token.split('.');
 
     const password = this.configService.get<string>('CRYPTO_AES_PASSWORD');
@@ -48,7 +52,9 @@ export class EncryptService {
   }
 
   async bCryptHash(plainText: string): Promise<string> {
-    const saltOrRounds = this.configService.get<number>('BCRYPT_ROUNDS');
+    const saltOrRounds = Number(this.configService.get<number>('BCRYPT_ROUNDS'));
+
+    if (!plainText || !saltOrRounds) throw new UnprocessableEntityException('Erro ao criar senha');
 
     const hash = await bcrypt.hash(plainText, saltOrRounds);
 
@@ -56,6 +62,8 @@ export class EncryptService {
   }
 
   async bCryptMatch(plainText: string, hash: string): Promise<boolean> {
+    if (!plainText || !hash) throw new UnprocessableEntityException('Erro ao validar senha');
+
     const isMatch = await bcrypt.compare(plainText, hash);
 
     return isMatch;
